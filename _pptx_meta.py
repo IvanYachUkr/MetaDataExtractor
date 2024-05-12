@@ -2,10 +2,10 @@
 
 import argparse
 import zipfile
-from xml.etree import ElementTree as ET
+import defusedxml.ElementTree as ET
 from pptx import Presentation
 from datetime import datetime
-
+import sys
 
 class PptxMetadataHelper:
     """Class responsible for providing documentation for the command-line tool."""
@@ -13,7 +13,7 @@ class PptxMetadataHelper:
     @staticmethod
     def print_help():
         help_text = """
-        Usage: metad file options
+        Usage: metad pptx file [options]
 
         Options:
         -a, --all       Extract all metadata.
@@ -24,48 +24,51 @@ class PptxMetadataHelper:
         -h, --help      Display this help message and exit.
 
         Examples:
-        metad pptx example.pptx -a -t
-        metad pptx help
+        metad pptx example.pptx -a
+        metad pptx example.pptx -t -m
         """
         print(help_text)
 
 def extract_xml_data(pptx_path):
     metadata = {}
-    with zipfile.ZipFile(pptx_path, 'r') as pptx:
-        # Extract core.xml and app.xml and parse their contents
-        with pptx.open('docProps/core.xml') as core_xml, pptx.open('docProps/app.xml') as app_xml:
-            core_tree, app_tree = ET.parse(core_xml), ET.parse(app_xml)
-            core_root, app_root = core_tree.getroot(), app_tree.getroot()
+    try:
+        with zipfile.ZipFile(pptx_path, 'r') as pptx:
+            # Extract core.xml and app.xml and parse their contents
+            with pptx.open('docProps/core.xml') as core_xml, pptx.open('docProps/app.xml') as app_xml:
+                core_tree, app_tree = ET.parse(core_xml), ET.parse(app_xml)
+                core_root, app_root = core_tree.getroot(), app_tree.getroot()
 
-            # Namespace for core.xml and app.xml
-            ns = {
-                'cp': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
-                'dc': 'http://purl.org/dc/elements/1.1/',
-                'dcterms': 'http://purl.org/dc/terms/',
-                'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-                'ep': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties'
-            }
-            
-            # Extract metadata from core.xml
-            metadata['Author'] = core_root.find('dc:creator', ns).text
-            metadata['LastModifiedBy'] = core_root.find('cp:lastModifiedBy', ns).text
-            metadata['Revision'] = core_root.find('cp:revision', ns).text
-            metadata['Created'] = core_root.find('dcterms:created', ns).text
-            metadata['Modified'] = core_root.find('dcterms:modified', ns).text
-            
-            # Extract metadata from app.xml
-            metadata['Template'] = app_root.find('ep:Template', ns).text if app_root.find('ep:Template', ns) is not None else None
-            metadata['TotalTime'] = app_root.find('ep:TotalTime', ns).text if app_root.find('ep:TotalTime', ns) is not None else None
-            metadata['Words'] = app_root.find('ep:Words', ns).text
-            metadata['Paragraphs'] = app_root.find('ep:Paragraphs', ns).text
-            metadata['Slides'] = app_root.find('ep:Slides', ns).text
-            metadata['Notes'] = app_root.find('ep:Notes', ns).text
-            metadata['HiddenSlides'] = app_root.find('ep:HiddenSlides', ns).text
-            metadata['MMClips'] = app_root.find('ep:MMClips', ns).text
-            metadata['Application'] = app_root.find('ep:Application', ns).text
-            metadata['PresentationFormat'] = app_root.find('ep:PresentationFormat', ns).text
-            metadata['AppVersion'] = app_root.find('ep:AppVersion', ns).text
-
+                # Namespace for core.xml and app.xml
+                ns = {
+                    'cp': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+                    'dc': 'http://purl.org/dc/elements/1.1/',
+                    'dcterms': 'http://purl.org/dc/terms/',
+                    'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+                    'ep': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties'
+                }
+                
+                # Extract metadata from core.xml
+                metadata['Author'] = core_root.find('dc:creator', ns).text if core_root.find('dc:creator', ns) is not None else "Not Available"
+                metadata['LastModifiedBy'] = core_root.find('cp:lastModifiedBy', ns).text if core_root.find('cp:lastModifiedBy', ns) is not None else "Not Available"
+                metadata['Revision'] = core_root.find('cp:revision', ns).text if core_root.find('cp:revision', ns) is not None else "Not Available"
+                metadata['Created'] = core_root.find('dcterms:created', ns).text if core_root.find('dcterms:created', ns) is not None else "Not Available"
+                metadata['Modified'] = core_root.find('dcterms:modified', ns).text if core_root.find('dcterms:modified', ns) is not None else "Not Available"
+                
+                # Extract metadata from app.xml
+                metadata['Template'] = app_root.find('ep:Template', ns).text if app_root.find('ep:Template', ns) is not None else "Not Available"
+                metadata['TotalTime'] = app_root.find('ep:TotalTime', ns).text if app_root.find('ep:TotalTime', ns) is not None else "Not Available"
+                metadata['Words'] = app_root.find('ep:Words', ns).text if app_root.find('ep:Words', ns) is not None else "Not Available"
+                metadata['Paragraphs'] = app_root.find('ep:Paragraphs', ns).text if app_root.find('ep:Paragraphs', ns) is not None else "Not Available"
+                metadata['Slides'] = app_root.find('ep:Slides', ns).text if app_root.find('ep:Slides', ns) is not None else "Not Available"
+                metadata['Notes'] = app_root.find('ep:Notes', ns).text if app_root.find('ep:Notes', ns) is not None else "Not Available"
+                metadata['HiddenSlides'] = app_root.find('ep:HiddenSlides', ns).text if app_root.find('ep:HiddenSlides', ns) is not None else "Not Available"
+                metadata['MMClips'] = app_root.find('ep:MMClips', ns).text if app_root.find('ep:MMClips', ns) is not None else "Not Available"
+                metadata['Application'] = app_root.find('ep:Application', ns).text if app_root.find('ep:Application', ns) is not None else "Not Available"
+                metadata['PresentationFormat'] = app_root.find('ep:PresentationFormat', ns).text if app_root.find('ep:PresentationFormat', ns) is not None else "Not Available"
+                metadata['AppVersion'] = app_root.find('ep:AppVersion', ns).text if app_root.find('ep:AppVersion', ns) is not None else "Not Available"
+    except (KeyError, ET.ParseError, zipfile.BadZipFile) as e:
+        print(f"Failed to read or parse the PPTX file: {str(e)}", file=sys.stderr)
+        sys.exit(1)
     return metadata
 
 def filter_metadata(metadata, options):
