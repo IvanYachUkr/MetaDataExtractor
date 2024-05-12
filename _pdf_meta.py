@@ -2,6 +2,7 @@
 
 import argparse
 from PyPDF2 import PdfReader
+import sys
 
 class PdfMetadataHelper:
     """
@@ -21,33 +22,36 @@ class PdfMetadataHelper:
         -h, --help      Display this help message and exit.
 
         Examples:
-        _pdf_meta.py -a my_document.docx
-        _pdf_meta.py -t -m my_document.docx
+        _pdf_meta.py -a my_document.pdf
+        _pdf_meta.py -t -m my_document.pdf
         """
         print(help_text)
 
 def extract_pdf_data(pdf_path):
-    reader = PdfReader(pdf_path)
-    metadata = dict(reader.metadata)
-    metadata["/Pages"] = f"{len(reader.pages)}"
-    return dict(metadata)
+    try:
+        reader = PdfReader(pdf_path)
+        metadata = {key: val for key, val in reader.metadata.items() if isinstance(val, str)}
+        metadata["/Pages"] = str(len(reader.pages))
+    except Exception as e:
+        print(f"Error reading PDF file: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    return metadata
 
 def filter_metadata(metadata, options):
     # Define metadata groupings
     text_md = ['/Title', '/Subject', '/Pages']
-    main_md = ['/Author', '/Creator', '/CreationDate', '/ModDate', '/Subject',
-               '/Title']
+    main_md = ['/Author', '/Creator', '/CreationDate', '/ModDate', '/Subject', '/Title']
     app_md = ['/Producer', '/Creator']
     simple_md = ['/Author', '/CreationDate', '/ModDate']
 
-    filtered_metadata = dict()
+    filtered_metadata = {}
 
     # Helper function to add selected props to filtered_metadata
     def add_props(props_list):
         for prop in props_list:
             if prop in metadata:
                 filtered_metadata[prop] = metadata[prop]
-    
+
     # Filter based on selected options
     if 'all' in options:
         filtered_metadata = metadata
@@ -60,7 +64,7 @@ def filter_metadata(metadata, options):
             add_props(app_md)
         if 'simple' in options:
             add_props(simple_md)
-    
+
     return filtered_metadata
 
 def main():
@@ -91,7 +95,7 @@ def main():
     args = parser.parse_args()
 
     # Handle help option
-    if args.help or not args.file: # also display help if no file provided
+    if args.help or not args.file:  # also display help if no file provided
         PdfMetadataHelper.print_help()
         return
 
@@ -109,12 +113,16 @@ def main():
         selected_options.append('simple')
 
     # Extract and filter metadata
-    metadata = extract_pdf_data(args.file)
-    filtered_metadata = filter_metadata(metadata, selected_options)
-    
-    # Print filtered metadata in a more readable format
-    for key, value in filtered_metadata.items():
-        print(f"{key}: {value if value is not None else 'Not Available'}")
+    try:
+        metadata = extract_pdf_data(args.file)
+        filtered_metadata = filter_metadata(metadata, selected_options)
+        
+        # Print filtered metadata in a more readable format
+        for key, value in filtered_metadata.items():
+            print(f"{key}: {value if value is not None else 'Not Available'}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
