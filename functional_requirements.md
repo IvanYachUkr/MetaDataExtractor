@@ -102,4 +102,3 @@ The system is limited to these document types and is designed to allow for futur
 
 **FR7.2**: Detailed CLI usage instructions and options must be provided for each supported document type.
 
-This document captures all the functional requirements necessary to build a secure and efficient metadata extraction system with robust error handling and user-friendly CLI.
