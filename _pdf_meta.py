@@ -3,6 +3,16 @@
 import argparse
 from PyPDF2 import PdfReader
 import sys
+import os
+
+try:
+    import psutil
+    ram_size = psutil.virtual_memory().total
+    extraction_size_limit = int(0.2 * ram_size)
+    metadata_size_limit = int(0.1 * ram_size)
+except ImportError:
+    extraction_size_limit = 1 * 1024 * 1024 * 1024  # 1 GB
+    metadata_size_limit = 200 * 1024 * 1024  # 200 MB
 
 class PdfMetadataHelper:
     """
@@ -22,19 +32,36 @@ class PdfMetadataHelper:
         -h, --help      Display this help message and exit.
 
         Examples:
-        _pdf_meta.py -a my_document.pdf
-        _pdf_meta.py -t -m my_document.pdf
+        ./metad.sh pdf example.pdf
+        ./metad.sh pdf example.pdf -t -m 
         """
         print(help_text)
 
-def extract_pdf_data(pdf_path):
+def check_file_size(file_path, extraction_size_limit):
+    file_size = os.path.getsize(file_path)
+    if file_size > extraction_size_limit:
+        raise ValueError(f"File size exceeds the allowed limit of {extraction_size_limit} bytes")
+    return file_size
+
+def extract_pdf_data(pdf_path, extraction_size_limit, metadata_size_limit):
+    metadata = {}
+    
+    try:
+        file_size = check_file_size(pdf_path, extraction_size_limit)
+    except ValueError as e:
+        raise ValueError(f"Error in file size check: {str(e)}")
+
     try:
         reader = PdfReader(pdf_path)
+        metadata_size = len(str(reader.metadata))
+        if metadata_size > metadata_size_limit:
+            raise ValueError(f"Metadata size exceeds the allowed limit of {metadata_size_limit} bytes")
+
         metadata = {key: val for key, val in reader.metadata.items() if isinstance(val, str)}
         metadata["/Pages"] = str(len(reader.pages))
     except Exception as e:
-        print(f"Error reading PDF file: {str(e)}", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError(f"Error reading PDF file: {str(e)}")
+    
     return metadata
 
 def filter_metadata(metadata, options):
@@ -114,14 +141,17 @@ def main():
 
     # Extract and filter metadata
     try:
-        metadata = extract_pdf_data(args.file)
+        metadata = extract_pdf_data(args.file, extraction_size_limit, metadata_size_limit)
         filtered_metadata = filter_metadata(metadata, selected_options)
         
         # Print filtered metadata in a more readable format
         for key, value in filtered_metadata.items():
             print(f"{key}: {value if value is not None else 'Not Available'}")
+    except ValueError as e:
+        print(f"Failed to process the document: {str(e)}", file=sys.stderr)
+        sys.exit(1)
     except Exception as e:
-        print(f"An error occurred: {str(e)}", file=sys.stderr)
+        print(f"An unexpected error occurred: {str(e)}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
