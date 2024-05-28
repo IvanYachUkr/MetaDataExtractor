@@ -1,104 +1,142 @@
-# Functional Requirements for Metadata Extraction System
+## MetaD Software Application Functional Requirements
 
-## 1. Overview
+### Introduction
+The MetaD software application is a command-line tool designed to extract metadata from various document formats, including DOCX, PDF, and PPTX files. The tool supports extracting different types of metadata based on user-defined options and ensures security by addressing common vulnerabilities.
 
-This document outlines the functional requirements for a software system designed to extract metadata from supported document types. The system aims to facilitate secure, efficient, and user-friendly extraction of metadata.
+### Functional Requirements
 
-## 2. System Overview
+#### 1. General Requirements
 
-### 2.1 Purpose
+1.1 The application shall support the following file types for metadata extraction:
+- DOCX
+- PDF
+- PPTX
 
-The purpose of this system is to extract and display metadata from specified types of documents using a command-line interface (CLI).
+1.2 The application shall be executable via the command line.
 
-### 2.2 Scope
+1.3 The application shall log errors and important events to the standard output using a consistent logging format.
 
-The system supports metadata extraction from the following document types:
-- DOCX (Microsoft Word Document)
-- PDF (Portable Document Format)
-- PPTX (Microsoft PowerPoint Presentation)
+1.4 The application shall sanitize file paths to prevent directory traversal attacks by:
+- Converting file paths to absolute paths.
+- Ensuring file paths are within the current working directory.
 
-The system is limited to these document types and is designed to allow for future extensions.
+1.5 The application shall check if a file exists and is readable before processing it by verifying:
+- The file is present in the file system.
+- The file has read permissions.
 
-## 3. Functional Requirements
+1.6 The application shall check if a file is empty (0 bytes) before processing it.
 
-### 3.1 Metadata Extraction
+1.7 On Windows, the application shall prevent the execution of batch files (*.bat and *.cmd) to avoid security risks by:
+- Checking the file extension.
+- Exiting with an error if a batch file is detected.
 
-**FR1.1**: The system must support metadata extraction for three specific document types: DOCX, PDF, and PPTX.
+1.8 The application shall exit with appropriate exit codes based on different error scenarios to facilitate debugging and automation.
 
-**FR1.2**: The system must extract metadata based on the command-line input which specifies the document type, the file path, and optionally, the specific type of metadata desired.
+1.9 The application shall limit the size of the files and their metadata to prevent zip bombs:
+- The extraction size limit shall be 20% of the system's RAM.
+- The metadata size limit shall be 10% of the system's RAM.
+- If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-**FR1.3**: For DOCX files, the system must safely parse using `defusedxml.ElementTree` to prevent XML External Entity (XXE) attacks and similar XML-related vulnerabilities.
+1.10 The application shall use `defusedxml.ElementTree` to mitigate XML-related attacks such as XML bombs and XML injection.
 
-**FR1.4**: For PDF files, the system must use `PyPDF2.PdfReader` to read and extract metadata safely and accurately.
+1.11 The application shall avoid command line injection by:
+- Constructing commands as lists of arguments.
+- Not using `shell=True`.
 
-**FR1.5**: For PPTX files, the system must use `defusedxml.ElementTree` for secure XML parsing to prevent security vulnerabilities related to XML processing.
+#### 2. Command-Line Interface
 
-### 3.2 Command-Line Interface (CLI)
+2.1 The application shall accept the following command-line arguments:
+- File type (`docx`, `pdf`, `pptx`)
+- File path
+- Additional arguments for metadata extraction options
 
-**FR2.1**: The system must provide a CLI for users to specify the operation mode, which includes choosing the document type and providing the file path.
+2.2 The application shall display a help message when the `-h` or `--help` option is used, providing usage instructions and examples.
 
-**FR2.2**: The system must provide detailed help and usage instructions when the `-h` or `--help` option is used.
+2.3 The application shall process the additional arguments for specific metadata extraction options based on the file type.
 
-**FR2.3**: If invoked with insufficient or incorrect command-line arguments, the system must show usage information and exit with a status code of 1.
+#### 3. Metadata Extraction for DOCX Files
 
-### 3.3 File Handling and Validation
+3.1 The application shall extract metadata from DOCX files using `_docx_meta.py`.
 
-**FR3.1**: The system must sanitize input file paths using `os.path.normpath` and other relevant functions to prevent directory traversal attacks. If the sanitized path leads to a file outside the intended directory, the system must log an error and exit with a status code of 1.
+3.2 The application shall support the following metadata extraction options for DOCX files:
+- `-a`, `--all`: Extract all metadata.
+- `-t`, `--textprops`: Extract text-related properties (pages, words, characters, keywords, language).
+- `-m`, `--mainprops`: Extract main properties (author, description, last modified by, revision, title, subject, creation date, modification date, language).
+- `-d`, `--appdata`: Extract application data (application name and version).
+- `-s`, `--simple`: Extract author, creation date, and modification date only.
 
-**FR3.2**: The system must check if the specified file exists and is readable. If not, it must log an error and exit with status code 1.
+3.3 The application shall limit the size of the DOCX file and its metadata to prevent zip bombs:
+- The extraction size limit shall be 20% of the system's RAM.
+- The metadata size limit shall be 10% of the system's RAM.
+- If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-**FR3.3**: If the file is empty (0 bytes), the system must log an error stating "The file '{filename}' is empty." and exit with status code 1.
+3.4 The application shall handle errors related to:
+- Invalid ZIP files.
+- Exceeding decompression size limits.
+- XML parsing issues.
 
-### 3.4 Security and Safety
+#### 4. Metadata Extraction for PDF Files
 
-**FR4.1**: The system must adhere to secure XML parsing practices with `defusedxml.ElementTree` for DOCX and PPTX files to mitigate risks such as XXE attacks.
+4.1 The application shall extract metadata from PDF files using `_pdf_meta.py`.
 
-**FR4.2**: The system must handle all operational errors and exceptions gracefully, ensuring that sensitive error information or system details are not exposed to the user.
+4.2 The application shall support the following metadata extraction options for PDF files:
+- `-a`, `--all`: Extract all metadata.
+- `-t`, `--textprops`: Extract text-related properties (title, subject, page count).
+- `-m`, `--mainprops`: Extract main properties (author, creator, creation date, modification date, subject, title).
+- `-d`, `--appdata`: Extract application data (producer, creator).
+- `-s`, `--simple`: Extract author, creation date, and modification date only.
 
-**FR4.3**: The system must execute metadata extraction scripts securely using `subprocess.call` with a list to avoid shell injection vulnerabilities.
+4.3 The application shall limit the size of the PDF file and its metadata to prevent large files from causing issues:
+- The extraction size limit shall be 20% of the system's RAM.
+- The metadata size limit shall be 10% of the system's RAM.
+- If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-**FR4.4**: The system must ensure that dynamically constructed paths or commands are securely composed to prevent injection attacks and other common vulnerabilities.
+4.4 The application shall handle errors related to:
+- File reading issues.
+- Metadata extraction failures.
+- File size limit exceedances.
 
-### 3.5 Metadata Extraction Options by Document Type
+#### 5. Metadata Extraction for PPTX Files
 
-#### 3.5.1 DOCX Metadata Extraction Options
+5.1 The application shall extract metadata from PPTX files using `_pptx_meta.py`.
 
-**FR5.1**: For DOCX, the system should allow users to extract:
-- All metadata (`-a` or `--all`)
-- Text-related properties: Words, Paragraphs (`-t` or `--textprops`)
-- Main properties: Author, Last Modified By, Revision, Creation Date, Modification Date (`-m` or `--mainprops`)
-- Application data: Application Name, App Version, Template, Total Editing Time (`-d` or `--appdata`)
-- Simple properties: Author, Creation Date, Modification Date (`-s` or `--simple`)
+5.2 The application shall support the following metadata extraction options for PPTX files:
+- `-a`, `--all`: Extract all metadata.
+- `-t`, `--textprops`: Extract text-related properties (words, paragraphs, slides, notes, hidden slides, multimedia clips).
+- `-m`, `--mainprops`: Extract main properties (author, last modified by, revision, creation date, modification date).
+- `-d`, `--appdata`: Extract application data (application name, presentation format, total editing time, template).
+- `-s`, `--simple`: Extract author, creation date, and modification date only.
 
-#### 3.5.2 PDF Metadata Extraction Options
+5.3 The application shall limit the size of the PPTX file and its metadata to prevent zip bombs:
+- The extraction size limit shall be 20% of the system's RAM.
+- The metadata size limit shall be 10% of the system's RAM.
+- If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-**FR5.2**: For PDF, the system should support extracting:
-- All metadata (`-a` or `--all`)
-- Text-related properties: Title, Subject, Number of Pages (`-t` or `--textprops`)
-- Main properties: Author, Creator, Creation Date, Modification Date, Subject, Title (`-m` or `--mainprops`)
-- Application data: Producer, Creator (`-d` or `--appdata`)
-- Simple properties: Author, Creation Date, Modification Date (`-s` or `--simple`)
+5.4 The application shall handle errors related to:
+- Invalid ZIP files.
+- Exceeding decompression size limits.
+- XML parsing issues.
 
-#### 3.5.3 PPTX Metadata Extraction Options
+#### 6. Error Handling
 
-**FR5.3**: For PPTX, the system should enable users to extract:
-- All metadata (`-a` or `--all`)
-- Text-related properties: Words, Paragraphs, Slides, Notes, Hidden Slides, Multimedia Clips (`-t` or `--textprops`)
-- Main properties: Author, Last Modified By, Revision, Creation Date, Modification Date (`-m` or `--mainprops`)
-- Application data: Application Name, Presentation Format, Total Editing Time, Template, App Version (`-d` or `--appdata`)
-- Simple properties: Author, Creation Date, Modification Date (`-s` or `--simple`)
+6.1 The application shall exit with code `1` for general errors, including invalid arguments, file path issues, and unexpected errors.
 
-### 3.6 Error Handling
+6.2 The application shall exit with specific exit codes for different error scenarios:
+- Exit code `2` for unsupported file types.
+- Exit code `3` for invalid file paths (directory traversal).
+- Exit code `4` for non-existent or unreadable files.
+- Exit code `5` for empty files.
 
-**FR6.1**: The system must handle errors related to file parsing, missing metadata fields, and invalid files.
+6.3 The application shall log detailed error messages to the standard output to help diagnose issues, including the specific error encountered and potential solutions.
 
-**FR6.2**: For DOCX and PPTX files, errors related to invalid XML structure and file integrity issues must be handled appropriately.
 
-**FR6.3**: For PDF files, errors related to invalid or missing metadata fields must be handled gracefully.
+#### 7. Help and Documentation
 
-### 3.7 Help Documentation
+7.1 The application shall implement a general help option that can be triggered using the `-h` or `--help` argument.
 
-**FR7.1**: The system must provide comprehensive help documentation accessible through the `-h` or `--help` argument.
+7.2 Each file type class (DOCX, PDF, PPTX) shall implement specific help messages that detail the available options and usage examples:
+- The DOCX help message shall include usage instructions and examples for extracting DOCX metadata.
+- The PDF help message shall include usage instructions and examples for extracting PDF metadata.
+- The PPTX help message shall include usage instructions and examples for extracting PPTX metadata.
 
-**FR7.2**: Detailed CLI usage instructions and options must be provided for each supported document type.
-
+7.3 The help messages shall be clear, concise, and provide sufficient information for users to understand how to use the application effectively.
