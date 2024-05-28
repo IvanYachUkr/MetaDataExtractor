@@ -1,39 +1,88 @@
-### Non-Functional Requirements for MetaDataExtractor
+## MetaD Software Application Non-Functional Requirements
 
-#### Project Overview
-MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This document outlines the non-functional requirements for the project as a whole, highlighting potential vulnerabilities and mitigation strategies.
+### Introduction
+The MetaD software application is a command-line tool designed to extract metadata from DOCX, PDF, and PPTX files. 
+### Non-Functional Requirements
 
-#### Non-Functional Requirements
+#### 1. Performance Requirements
 
-**1. Reliability**
-- **NFR1.1**: The system should perform its required functions under stated conditions for 99% of the time, handling typical user input accurately.
-- **NFR1.2**: The system should manage and recover from errors gracefully, ensuring no data corruption or loss of significant functionality.
+1.1 **Processing Time**:
+- The application shall extract metadata from files and provide the results within a reasonable time frame, typically within a few seconds for standard-sized documents (up to 10 MB).
 
-**2. Usability**
-- **NFR2.1**: The system should provide intuitive, clear, and consistent command-line interfaces, making it easy for users to understand and use the system without frequent reference to documentation.
-- **NFR2.2**: The help and error messages provided by the system should be informative and guide the user towards the correct usage, especially in correcting input errors.
+1.2 **Resource Utilization**:
+- The application shall efficiently use system resources (CPU, memory) to ensure that it does not significantly degrade the performance of the host system.
 
-**3. Security**
-- **NFR3.1**: The system must sanitize all input file paths to prevent directory traversal and other common path manipulation vulnerabilities.
-- **NFR3.2**: The system must securely handle the processing of XML data using `defusedxml.ElementTree` to prevent XML External Entity (XXE) attacks and XML bomb attacks.
-- **NFR3.3**: The system must validate all input data to prevent injection attacks and other forms of malicious input manipulation.
-- **NFR3.4**: Error handling should be secure, preventing the exposure of sensitive system information or error messages that could aid an attacker.
-- **NFR3.5**: The system must ensure that subprocesses are invoked securely, preventing command injection and ensuring that external commands are run in a controlled manner using `subprocess.call` .
-- **NFR3.6**: The system must use `zipfile` for proper file extraction handling to prevent Zip Slip vulnerability and mitigate Zip Bomb attacks.
-- **NFR3.7**: The system must handle file content securely using libraries like `PyPDF2` and `pptx` to prevent buffer overflow and file corruption.
-- **NFR3.8**: The system should log all significant actions, especially errors and security-relevant events, to support auditing and troubleshooting.
+1.3 **Scalability**:
+- The application shall be able to handle multiple files in succession without significant performance degradation.
 
-**4. Maintainability**
-- **NFR4.1**: The system's source code should be well-organized, documented, and maintainable, allowing for easy updates and maintenance.
-- **NFR4.2**: The system should be modular, supporting clear separation of concerns and making individual components easier to update and test.
+#### 2. Security Requirements
 
-**5. Portability**
-- **NFR5.1**: The system should run on multiple operating systems (Windows, macOS, iPadOS, Linux) without modification, leveraging Python’s cross-platform capabilities.
-- **NFR5.2**: Dependencies required by the system should be clearly documented and easily installable across these operating systems.
+2.1 **File Path Sanitization**:
+- The application shall sanitize all file paths to prevent directory traversal attacks. This includes converting file paths to absolute paths and ensuring they are within the current working directory.
 
-**6. Compliance**
-- **NFR6.1**: The system must adhere to the relevant standards for DOCX, PDF, and PPTX file formats to ensure accurate metadata extraction.
+2.2 **Zip Bomb Prevention**:
+- The application shall limit the size of extracted files and metadata to prevent zip bomb attacks. The extraction size limit shall be 20% of the system's RAM, and the metadata size limit shall be 10% of the system's RAM. If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-**7. Documentation**
-- **NFR7.1**: Provide a comprehensive user manual detailing installation, configuration, usage, and troubleshooting.
-- **NFR7.2**: Include detailed technical documentation covering system architecture, module design, and development guidelines.
+2.3 **XML Bomb and Injection Mitigation**:
+- The application shall use `defusedxml.ElementTree` for XML parsing to mitigate XML-related attacks such as XML bombs and XML injection.
+
+2.4 **Command Line Injection Prevention**:
+- The application shall construct commands as lists of arguments and avoid using `shell=True` to prevent command line injection attacks.
+
+2.5 **Executable File Execution Prevention**:
+- On Windows, the application shall prevent the execution of batch files (`*.bat` and `*.cmd`) to avoid security risks.
+
+2.6 **File Existence and Readability Checks**:
+- The application shall verify that files exist and are readable before processing them.
+
+2.7 **Empty File Handling**:
+- The application shall check if files are empty (0 bytes) and prevent processing if they are.
+
+#### 3. Usability Requirements
+
+3.1 **Command-Line Interface**:
+- The application shall provide a user-friendly command-line interface with clear and concise error messages.
+
+3.2 **Help and Documentation**:
+- The application shall provide a general help option (`-h` or `--help`) and specific help messages for each file type class (DOCX, PDF, PPTX). These help messages shall include usage instructions and examples.
+
+3.3 **Error Messages**:
+- The application shall log detailed error messages to the standard output to help diagnose issues, including the specific error encountered and potential solutions.
+
+#### 4. Reliability Requirements
+
+4.1 **Error Handling**:
+- The application shall handle errors gracefully, providing appropriate error messages and exiting with specific exit codes for different error scenarios.
+
+4.2 **Consistency**:
+- The application shall ensure consistent behavior and output across different environments and document types.
+
+4.3 **Robustness**:
+- The application shall be robust against invalid inputs, corrupted files, and other unexpected conditions.
+
+#### 5. Maintainability Requirements
+
+5.1 **Code Quality**:
+- The application code shall follow best practices for readability, modularity, and documentation to facilitate maintenance and future enhancements. The code shall adhere to the PEP 8 style guide.
+
+5.2 **Logging**:
+- The application shall log errors and important events to aid in debugging and maintaining the application.
+
+5.3 **Modular Design**:
+- The application shall be designed in a modular fashion, with separate modules for different file types and functionalities, making it easier to update and maintain.
+
+#### 6. Portability Requirements
+
+6.1 **Platform Independence**:
+- The application shall be platform-independent and run on any operating system that supports Python. Examples of supported operating systems include Windows, macOS, iPadOS, and Linux.
+
+6.2 **Dependency Management**:
+- The application shall manage dependencies appropriately, ensuring that all required libraries are available and properly documented.
+
+#### 7. Documentation Requirements
+
+7.1 **Documentation**:
+- The application shall provide documentation for all supported file types (DOCX, PDF, PPTX). This documentation shall include:
+  - Usage instructions
+  - Examples of command-line options
+  - Detailed descriptions of available metadata extraction options
