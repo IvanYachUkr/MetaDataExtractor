@@ -50,27 +50,27 @@ MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX,
 
 1. **Extract All Metadata**
    ```bash
-   python main.py -a path/to/document
+   ./metad.sh docx path/to/document -a
    ```
 
 2. **Extract Text Properties**
    ```bash
-   python main.py -t path/to/document
+   ./metad.sh docx path/to/document -t
    ```
 
 3. **Extract Main Properties**
    ```bash
-   python main.py -m path/to/document
+   ./metad.sh docx path/to/document -m
    ```
 
 4. **Extract Application Data**
    ```bash
-   python main.py -d path/to/document
+   ./metad.sh docx path/to/document -d
    ```
 
 5. **Extract Simple Properties**
    ```bash
-   python main.py -s path/to/document
+   ./metad.sh docx path/to/document -s
    ```
 
 ## Modules
@@ -106,9 +106,7 @@ This module handles metadata extraction from DOCX files. It uses XML parsing to 
 
 **Usage Example:**
 ```python
-from _docx_meta import extract_docx_metadata
-metadata = extract_docx_metadata("path/to/document.docx")
-print(metadata)
+./metad.sh docx path/to/document.docx
 ```
 
 ### _pdf_meta.py
@@ -126,9 +124,7 @@ This module handles metadata extraction from PDF files. It extracts the followin
 
 **Usage Example:**
 ```python
-from _pdf_meta import extract_pdf_metadata
-metadata = extract_pdf_metadata("path/to/document.pdf")
-print(metadata)
+./metad.sh pdf path/to/document.pdf
 ```
 
 ### _pptx_meta.py
@@ -152,9 +148,7 @@ This module handles metadata extraction from PPTX files. It uses XML parsing to 
 
 **Usage Example:**
 ```python
-from _pptx_meta import extract_pptx_metadata
-metadata = extract_pptx_metadata("path/to/document.pptx")
-print(metadata)
+./metad.sh pptx path/to/document.pptx
 ```
 
 
