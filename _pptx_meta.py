@@ -4,7 +4,6 @@
 import argparse
 import zipfile
 import defusedxml.ElementTree as ET
-from pptx import Presentation
 import sys
 
 try:
