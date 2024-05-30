@@ -9,4 +9,4 @@ XlsxWriter==3.2.0
 
 # Optional dependencies
 # psutil is used for determining RAM size limits
-psutil==5.9.4
+#psutil==5.9.4
