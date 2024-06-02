@@ -1,6 +1,2 @@
 defusedxml==0.7.1
 PyPDF2==3.0.1
-
-# Optional dependencies
-# psutil is used for determining RAM size limits
-#psutil==5.9.4
