@@ -21,7 +21,12 @@ The MetaD software application is a command-line tool designed to extract metada
 - The application shall sanitize all file paths to prevent directory traversal attacks. This includes converting file paths to absolute paths and ensuring they are within the current working directory.
 
 2.2 **Zip Bomb Prevention**:
-- The application shall limit the size of extracted files and metadata to prevent zip bomb attacks. The extraction size limit shall be 20% of the system's RAM, and the metadata size limit shall be 10% of the system's RAM. If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
+- The application shall try to limit the overall RAM usage by a default amount of 10% of the system's RAM.
+- As an additional safety measure, the application shall limit the size of extracted files and metadata:
+  - The extraction size limit shall be 20% of the system's RAM.
+  - The metadata size limit shall be 10% of the system's RAM.
+  - If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
+- These extraction and metadata size limits serve as the main security measure if it is not possible to set a global RAM limit.
 
 2.3 **XML Bomb and Injection Mitigation**:
 - The application shall use `defusedxml.ElementTree` for XML parsing to mitigate XML-related attacks such as XML bombs and XML injection.
