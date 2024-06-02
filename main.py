@@ -7,8 +7,9 @@ import subprocess
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 try:
+    import psutil
     import resource
-    RAM_LIMIT = int(0.2 * resource.getpagesize() * os.sysconf("SC_PHYS_PAGES"))  # 20% of total RAM
+    RAM_LIMIT = int(0.1 * resource.getpagesize() * os.sysconf("SC_PHYS_PAGES"))  # 10% of total RAM
 
     def set_memory_limit():
         resource.setrlimit(resource.RLIMIT_AS, (RAM_LIMIT, RAM_LIMIT))
