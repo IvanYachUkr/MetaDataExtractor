@@ -37,9 +37,14 @@ The MetaD software application is a command-line tool designed to extract metada
 - The metadata size limit shall be 10% of the system's RAM.
 - If `psutil` is not available, the extraction size limit shall default to 1 GB, and the metadata size limit shall default to 200 MB.
 
-1.10 The application shall use `defusedxml.ElementTree` to mitigate XML-related attacks such as XML bombs and XML injection.
+1.10 The application shall limit overall RAM usage to 10% of the system's RAM when it can be done:
+- Use the `resource` module on Unix systems.
+- Use `psutil` for real-time monitoring on systems where `resource` is unavailable.
+- Log a warning if neither method is available.
 
-1.11 The application shall avoid command line injection by:
+1.11 The application shall use `defusedxml.ElementTree` to mitigate XML-related attacks such as XML bombs and XML injection.
+
+1.12 The application shall avoid command line injection by:
 - Constructing commands as lists of arguments.
 - Not using `shell=True`.
 
