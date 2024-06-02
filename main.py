@@ -1,4 +1,3 @@
-
 import os
 import sys
 import logging
@@ -7,10 +6,43 @@ import subprocess
 # Setup basic logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
+try:
+    import resource
+    RAM_LIMIT = int(0.2 * resource.getpagesize() * os.sysconf("SC_PHYS_PAGES"))  # 20% of total RAM
+
+    def set_memory_limit():
+        resource.setrlimit(resource.RLIMIT_AS, (RAM_LIMIT, RAM_LIMIT))
+
+except ImportError:
+    try:
+        import psutil
+        import threading
+        import time
+
+        RAM_LIMIT = int(0.2 * psutil.virtual_memory().total)  # 20% of total RAM
+
+        def monitor_memory(limit, event):
+            process = psutil.Process(os.getpid())
+            while not event.is_set():
+                mem_usage = process.memory_info().rss
+                if mem_usage > limit:
+                    print("Memory limit exceeded. Terminating process...", file=sys.stderr)
+                    event.set()
+                    os._exit(1)  # Force exit the process
+                time.sleep(0.1)
+
+        stop_event = threading.Event()
+        monitor_thread = threading.Thread(target=monitor_memory, args=(RAM_LIMIT, stop_event))
+        
+        def set_memory_limit():
+            monitor_thread.start()
+    except ImportError:
+        def set_memory_limit():
+            logging.warning("Memory limit enforcement is not available.")
+
 def sanitize_path(filepath):
     """Sanitize the file path to prevent directory traversal."""
     abs_path = os.path.abspath(filepath)
-    # Ensure the file path is within the current working directory
     if not abs_path.startswith(os.getcwd()):
         raise ValueError("Invalid file path: potential directory traversal attack.")
     return abs_path
@@ -36,6 +68,9 @@ def is_batch_file(filepath):
     return filepath.lower().endswith(('.bat', '.cmd'))
 
 def main():
+    # Set memory limit if possible
+    set_memory_limit()
+
     # Documenting supported file types
     supported_types = {
         'docx': '_docx_meta.py',
@@ -90,7 +125,13 @@ def main():
         logging.error(f"An unexpected error occurred: {e}")
         sys.exit(1)
 
+    if 'stop_event' in globals():
+        stop_event.set()
+        monitor_thread.join()
+
     sys.exit(0)
 
 if __name__ == "__main__":
     main()
+
+
