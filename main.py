@@ -20,7 +20,7 @@ except ImportError:
         import threading
         import time
 
-        RAM_LIMIT = int(0.2 * psutil.virtual_memory().total)  # 20% of total RAM
+        RAM_LIMIT = int(0.1 * psutil.virtual_memory().total)  # 10% of total RAM
 
         def monitor_memory(limit, event):
             process = psutil.Process(os.getpid())
