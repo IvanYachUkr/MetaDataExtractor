@@ -1,0 +1,3 @@
+# Optional dependencies
+# psutil is used for determining RAM size limits
+psutil==5.9.4
