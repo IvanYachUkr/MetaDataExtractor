@@ -33,6 +33,7 @@ MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX,
 3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
+   pip install -r optional_requirements.txt
    ```
 
 ## Usage
