@@ -1,7 +1,10 @@
+Here is the updated README file including instructions on how to run unit tests:
+
+---
 
 # MetaDataExtractor
 
-MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This user manual provides detailed instructions on how to install, configure, and use the tool effectively.
+MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This user manual provides detailed instructions on how to install, configure, use the tool, and run unit tests effectively.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -13,6 +16,7 @@ MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX,
   - [_docx_meta.py](#_docx_metapy)
   - [_pdf_meta.py](#_pdf_metapy)
   - [_pptx_meta.py](#_pptx_metapy)
+- [Running Unit Tests](#running-unit-tests)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -152,8 +156,32 @@ This module handles metadata extraction from PPTX files. It uses XML parsing to 
 ./metad.sh pptx path/to/document.pptx
 ```
 
+## Running Unit Tests
+
+To ensure the functionality of the metadata extraction process, unit tests are provided. Follow these steps to run the unit tests:
+
+1. **Install Additional Dependencies for Testing**
+   ```bash
+   pip install -r requirements_test.txt
+   ```
+
+2. **Run Unit Tests**
+
+   The provided `run_unit_tests.py` file is designed to automate the process of running tests for PDF, DOCX, and PPTX metadata extraction. This script will run all tests, store full outputs, and summarize any failures.
+
+   To run the unit tests, execute the following command:
+   ```bash
+   python run_unit_tests.py
+   ```
+
+   This script performs the following:
+   - Executes tests in the `tests` folder for `test_pdf_meta.py`, `test_pptx_meta.py`, and `test_docx_meta.py`.
+   - Saves the full output to a file named `test_full_output.txt`.
+   - If any tests fail, the summary of failures will be stored in a file named `test_failure_summary.txt`.
+
+   You will be notified in the console about the locations of the full test output and failure summary, if applicable.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-```
+
