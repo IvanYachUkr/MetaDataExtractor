@@ -181,7 +181,23 @@ To ensure the functionality of the metadata extraction process, unit tests are p
 
    You will be notified in the console about the locations of the full test output and failure summary, if applicable.
 
+## Running UI Tests
+
+1. **Install Additional Dependencies for UI Testing**
+   ```bash
+   pip install -r user_interface_requirements_test.txt
+   ```
+
+2. **Run UI Tests**
+
+   The provided `tests/test_app.py` file is designed to automate the process of running tests for the UI of the metadata extraction app. This script will run all tests and display the results in the console and save detailed log messages in the tests/ui_test_results folder.
+
+   To run the UI tests, execute the following command:
+   ```bash
+   pytest tests/test_app.py -s
+   ```
+
+This command will execute the UI tests and display the extracted metadata directly in the console, allowing for easy verification and debugging.
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
