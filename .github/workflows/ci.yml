@@ -12,6 +12,7 @@ jobs:
   # Unit tests on all OS
   unit-tests:
     strategy:
+      fail-fast: false  # Ensure all matrix jobs run even if some fail
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
@@ -41,6 +42,7 @@ jobs:
   # GUI tests on all OS
   gui-tests:
     strategy:
+      fail-fast: false  # Ensure all matrix jobs run even if some fail
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
