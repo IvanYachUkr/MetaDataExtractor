@@ -14,7 +14,8 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.11, 3.12] 
+        python-version: [3.10, 3.11, 3.12, 3.13]
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -24,7 +25,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
+    - name: Install non-GUI dependencies for unit tests
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -34,3 +35,22 @@ jobs:
     - name: Run unit tests
       run: |
         python run_unit_tests.py
+
+    - name: Install GUI dependencies
+      if: success()
+      run: |
+        pip install -r user_interface_requirements_test.txt
+
+    - name: Start Xvfb
+      if: success()
+      run: |
+        Xvfb :99 -screen 0 1920x1080x24 &
+      env:
+        DISPLAY: :99
+
+    - name: Run GUI tests
+      if: success()
+      run: |
+        pytest tests/test_app.py -s
+      env:
+        DISPLAY: :99
