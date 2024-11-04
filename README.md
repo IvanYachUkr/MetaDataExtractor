@@ -1,7 +1,7 @@
 # MetaDataExtractor
-[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml)
-[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml)
-[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml)
+[![Unit Tests (All OS)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml)
+[![GUI Tests (Ubuntu 22 & 24)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml)
+[![GUI Tests (Windows & macOS)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml)
 [![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml)
 MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This user manual provides detailed instructions on how to install, configure, use the tool, and run unit tests effectively.
 
