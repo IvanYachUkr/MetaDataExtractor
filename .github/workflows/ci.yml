@@ -55,10 +55,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install GUI dependencies
+    - name: Install PyQt5 first
       run: |
         python -m pip install --upgrade pip
-        pip install -r user_interface_requirements.txt
+        pip install PyQt5==5.15.11
+
+    - name: Install pytest-qt after PyQt5
+      run: |
         pip install git+https://github.com/pytest-dev/pytest-qt.git@master
 
     - name: Run GUI tests
