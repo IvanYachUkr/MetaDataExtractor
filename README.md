@@ -1,6 +1,8 @@
 # MetaDataExtractor
+[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/unit-tests.yml)
+[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-ubuntu.yml)
+[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/gui-tests-windows-macos.yml)
 [![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml)
-
 MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This user manual provides detailed instructions on how to install, configure, use the tool, and run unit tests effectively.
 
 ## Table of Contents
@@ -47,6 +49,42 @@ MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX,
 - `-d, --appdata`: Extract application data (application name and version).
 - `-s, --simple`: Extract author, creation date, and modification date only.
 - `-h, --help`: Display help message and exit.
+
+### Graphical User Interface (GUI)
+
+To launch the GUI, execute the `app.py` file:
+```bash
+python app.py
+```
+
+#### Using the GUI
+
+1. **File Type Selection**: Choose the type of file you want to extract metadata from (DOCX, PPTX, or PDF) using the dropdown labeled "Select File Type."
+
+2. **File Selection**: Click the "Browse" button to select your file. The chosen file path will be displayed under the "Select File" section.
+
+3. **Metadata Options**: Choose the metadata options to extract:
+   - **All Metadata**: Selects all available metadata options. Other checkboxes are disabled if this is selected.
+   - **Individual Options**: Select specific metadata to extract, such as "Text Properties," "Main Properties," "Application Data," or "Simple Properties."
+
+4. **Extract Metadata**: Click the "Extract Metadata" button to begin extraction. The extracted metadata will be displayed in the "Extracted Metadata" section below.
+
+5. **Copy to Clipboard**: Click the "Copy to Clipboard" button to copy the extracted metadata text.
+
+### Example GUI Layout
+The GUI consists of:
+- **File Type Dropdown**: Located at the top, for file type selection.
+- **File Selection**: The path to the selected file displays after you click "Browse."
+- **Metadata Options**: Choose from several checkboxes, including "All Metadata" and various specific options.
+- **Extract and Copy Buttons**: Extract the metadata, and copy it to your clipboard.
+
+## Compatibility
+
+- **Operating Systems**:
+  - Console-based application: Supports **macOS**, **Windows**, and **Ubuntu** (confirmed by GitHub CI).
+  - GUI: Compatible with **macOS** and **Windows**.
+  
+- **Python Versions**: Tested on Python 3.10 through 3.13.
 
 ### Examples
 
