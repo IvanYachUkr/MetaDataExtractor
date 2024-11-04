@@ -1,10 +1,21 @@
+name: CI for MetaDataExtractor
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
+  # Main build job for unit tests
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
@@ -27,7 +38,7 @@ jobs:
       run: |
         python run_unit_tests.py
 
-  # GUI test job (only on Windows)
+  # Separate job for GUI tests, only on Windows
   gui-tests:
     runs-on: windows-latest
 
@@ -46,6 +57,7 @@ jobs:
 
     - name: Install GUI dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r user_interface_requirements.txt
 
     - name: Run GUI tests
