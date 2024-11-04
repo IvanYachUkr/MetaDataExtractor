@@ -1,11 +1,8 @@
-
-
 #!/usr/bin/env python3
 
 import argparse
 import zipfile
 import defusedxml.ElementTree as ET
-import os
 import sys
 
 try:

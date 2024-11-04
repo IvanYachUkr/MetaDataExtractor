@@ -43,9 +43,6 @@ class TestPdfMeta(unittest.TestCase):
             '/CreationDate': 'D:20240909150118',  
             '/ModDate': 'D:20240910150118'         
         })
-
-        # Pass the in-memory PDF to PdfReader
-        reader = PdfReader(pdf_file)
         
         result = _pdf_meta.extract_pdf_data(pdf_file, 1 * 1024 * 1024 * 1024, 200 * 1024 * 1024)
 

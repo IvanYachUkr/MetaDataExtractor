@@ -44,7 +44,6 @@ def check_file_size(file_path, extraction_size_limit):
     return file_size
 
 def extract_pdf_data(pdf_path, extraction_size_limit, metadata_size_limit):
-    metadata = {}
     
     try:
         file_size = check_file_size(pdf_path, extraction_size_limit)
