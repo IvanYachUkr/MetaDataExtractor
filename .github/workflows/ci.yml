@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["v3.10", "v3.11", "v3.12", "v3.13"]
+        python-version: [3.10.15, 3.11, 3.12, 3.13]
 
     steps:
     - name: Checkout code
@@ -37,7 +37,7 @@ jobs:
         python run_unit_tests.py
 
     - name: Install GUI dependencies
-      if: success()  # Proceed only if unit tests pass
+      if: success()
       run: |
         pip install -r user_interface_requirements_test.txt
 
