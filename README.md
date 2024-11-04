@@ -1,8 +1,5 @@
-Here is the updated README file including instructions on how to run unit tests:
-
----
-
 # MetaDataExtractor
+[![CI for MetaDataExtractor](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml/badge.svg)](https://github.com/IvanYachUkr/MetaDataExtractor/actions/workflows/ci.yml)
 
 MetaDataExtractor is a Python-based tool designed to extract metadata from DOCX, PDF, and PPTX files. This user manual provides detailed instructions on how to install, configure, use the tool, and run unit tests effectively.
 
