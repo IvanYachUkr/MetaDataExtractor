@@ -83,7 +83,7 @@ The GUI consists of:
 
 - **Operating Systems**:
   - Console-based application: Supports **macOS**, **Windows**, and **Ubuntu** (confirmed by GitHub CI).
-  - GUI: Compatible with **macOS** and **Windows**.
+  - GUI: Compatible with **macOS** and **Windows**. It should work on Linux as well, however as of right now CI GUI tests fail for Ubuntu during pytest-qt installation.
   
 - **Python Versions**: Tested on Python 3.10 through 3.13.
 
